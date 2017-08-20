@@ -1,0 +1,51 @@
+/*function cursor() {
+    console.log(ssss);
+    if (cursors.down.isDown) {
+        angle = angle - 0.5;
+        sight.x = player.x + Math.sin(angle)*aimLengh + 7;
+        sight.y = player.y + Math.cos(angle)*aimLengh + 7;
+    }
+    if (cursors.right.isDown) {
+        angle = angle + 0.5;
+        sight.x = player.x + Math.sin(angle)*aimLengh + 7;
+        sight.y = player.y + Math.cos(angle)*aimLengh + 7;
+    }
+
+    ixe = game.input.mousePointer.x;
+    igrec = game.input.mousePointer.y;
+
+
+
+   /* saveSight = angle;
+    droiteA = game.input.mousePointer.y - player.y;
+    droiteB = game.input.mousePointer.x - player.x;
+    angle = Math.atan(droiteA/droiteB) * 180 / Math.PI;
+
+
+
+    sight.x = player.x + Math.sin(angle)*aimLengh + 7;
+    sight.y = player.y + Math.cos(angle)*aimLengh + 7;
+
+    /*if ((sight.y <= 105 && sight.x <= 45)||(sight.y <= 105 && sight.x >= 5) && verou2 == false) {
+        verou2 = true;
+    }
+    if ((sight.y <= 105 && sight.x <= 45)||(sight.y <= 105 && sight.x >= 5) && verou2 == true) {
+        sight.y = sight.y* -1;
+        sight.x = sight.x* -1;
+        verou2 = false;
+    }
+
+    console.log(angle);
+
+
+
+/*
+fucntion sleep(milliseconds) {
+  var start = (new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds) {
+      break;
+    }
+  }
+}
+*/
