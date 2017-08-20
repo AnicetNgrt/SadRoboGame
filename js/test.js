@@ -10,10 +10,10 @@ function preload() {
     game.load.audio('laser2',['assets/laser1.mp3']);
     game.load.audio('laser3',['assets/laser3.mp3']);
     game.load.audio('laser4',['assets/laser5.mp3']);
-    game.load.audio('snd1', ['assets/LVL1.ogg','assets/LVL1.mp3']);
-    game.load.audio('snd2', ['assets/LVL2.ogg','assets/LVL2.mp3']);
-    game.load.audio('snd3', ['assets/menu shope.ogg','assets/menu shope.mp3']);
-    game.load.audio('snd4', ['assets/LVL3.ogg','assets/LVL3.waw']);
+    game.load.audio('snd1', ['assets/stone.mp3']);
+    game.load.audio('snd2', ['assets/stone.mp3']);
+    game.load.audio('snd3', ['assets/stone.mp3']);
+    game.load.audio('snd4', ['assets/stone.mp3']);
     game.load.spritesheet('dude', 'assets/ROBOT/spritesheetROBOT.png', 25, 25);
     game.load.spritesheet('dude2', 'assets/ROBOT/spritesheetROBOT2.png', 25, 25);
     game.load.image('background', 'assets/BACKGROUND AND TILES/background.png');
