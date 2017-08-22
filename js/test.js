@@ -834,6 +834,7 @@ function update() {
       life2 = 10;
       verou5 = true;
       verou7 = true;
+      isIa = false;
       create();
       menuIndex = 1;
 
@@ -846,6 +847,7 @@ function update() {
       life2 = 10;
       verou5 = true;
       verou7 = true;
+      isIa = false;
       create();
       menuIndex = 1;
 
