@@ -35,22 +35,23 @@ function preload() {
     game.load.image('limite', 'assets/limite.png');
     game.load.image('limiteV', 'assets/limite2.png');
     game.load.image('heart', 'assets/cr/cr10.png');
+    game.load.image('menuS', 'assets/BACKGROUND AND TILES/settings.png');
 }
 
 var verou3 = true; var cherche; var ixe; var igrec;
 var saveSight; var verou2; var aimLengh = 0.055; var angle;
-var droiteA; var droiteB; var sight; var player;
-var facing = 'right'; var jumpTimer = 0; var cursors;
-var jumpButton; var bg; var wasLeft; var wasRight;
+var droiteA; var droiteB; var sight; var player; var nivAI = 1; var mode;
+var facing = 'right'; var jumpTimer = 0; var cursors; var minAIrate = 1; var maxAIrate = 1;
+var jumpButton; var bg; var wasLeft; var wasRight; var laserFast = 1;
 var wasJump; var needed; var yolo = true; var ssss;
 var aaaa; var dddd; var wwww; var sightFar; var aimX = 30;
 var aimY = 30; var qqqq; var zzzz; var aimAcc = 0.1;
 var laser; var hitmarker; var laserSprite; var aimTimer = 0; var verou4 = true;
 var life = 10; var playerTrueY; var playerTrueX;
 var menuBlue; var menuRed; var cr; var angleHeart; var anglePlayer; var droiteC; var droiteD; var droiteE; var droiteG;
-var pad1; var pad2; var verou7 = true;
+var pad1; var pad2; var verou7 = true; var choixIndex = 1;
 var verou5 = true; var limite; var limite2; var limite3; var limite4;
-var verou6 = true; var menuN;
+var verou6 = true; var menuN; var menuS;
 var verou32 = true; var cherche2; var ixe2; var igrec2;
 var saveSight2; var verou22; var aimLengh2 = 0.055; var angle2;
 var droiteA2; var droiteB2; var sight2; var player2;
@@ -63,10 +64,10 @@ var player2TrueY; var player2TrueX; var menuPrin; var entere;
 var hitSnd; var menuIndex = 1; var actionTimer = 0;
 var life2 = 10; var heartTime; var jumpNow = false; var runLeftNow = false; var runRightNow = false; var shootHeartNow = false; var shootPlayerNow = false;
 var stepId2 = 1; var pppp; var iaDoId = 1; verou11 = true;
-var snd1; var up; var down; var left; var right;
+var snd1; var up; var down; var left; var right; var choixMax = 2;
 var snd2; var up2; var down2; var left2; var right2;
 var zzzz2; var qqqq2; var dddd2; var ssss2; var tttt; var ffff; var gggg; var hhhh; var iiii; var kkkk; var llll; var jjjj;
-var snd3; var menuInput; var menuInput2;
+var snd3; var menuInput; var menuInput2; var text3; var text4;
 var snd4; var verou8 = true; var verou10 = true;
 var bruh; var aimReset = 0; var aimReset2 = 0;
 var bruh2; var text; var text2; var isIa = false;
@@ -142,6 +143,7 @@ function createInputs() {
   dddd = game.input.keyboard.addKey(Phaser.Keyboard.D);
   zzzz = game.input.keyboard.addKey(Phaser.Keyboard.Z);
   qqqq = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+  delet = game.input.keyboard.addKey(Phaser.Keyboard.BACKSPACE);
   entere = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
   laser = new Phaser.Line(player.x, player.y, sight.x, sight.y);
   laser2 = new Phaser.Line(player2.x, player2.y, sight2.x, sight2.y);
@@ -231,16 +233,24 @@ function create() {
     text2.stroke = '#dd0000';
     text2.strokeThickness = 2;
 
+
     cr = game.add.sprite(3000, 3000, 'heart');
 
     hitmarker.alpha = 0;
     hitmarker2.alpha = 0;
-    menuN = game.add.sprite(0,0, 'menuN');
+    menuN = game.add.sprite(0,0, 'menuS');
+    menuS = game.add.sprite(0,0, 'menuS');
     menuInput = game.add.sprite(0,0, 'menuI');
     menuInput2 = game.add.sprite(0,0, 'menuI2');
     menuPrin = game.add.sprite(0,0, 'menuP');
     menuBlue = game.add.sprite(0,0, 'menuB');
     menuRed = game.add.sprite(0,0, 'menuR');
+    text3 = game.add.text(100, 90, "", { font: "bold 15px Arial", fill: "#ffffff" });
+    text4 = game.add.text(2, 2, "", { font: "bold 12px Arial", fill: "#ffffff" });
+    text3.stroke = '#aa33aa';
+    text3.strokeThickness = 2;
+    text4.stroke = '#aa33aa';
+    text4.strokeThickness = 2;
 
 
     menuBlue.alpha = 0;
@@ -284,16 +294,125 @@ function create() {
       snd2.onStop.add(soundStopped, this);
       snd3.onStop.add(soundStopped, this);
       snd4.onStop.add(soundStopped, this);
-      wwww.onDown.add(wd, this);
-      zzzz.onDown.add(zd, this);
-      iiii.onDown.add(id, this);
+      ssss.onDown.add(wd, this);
+      ssss.onDown.add(zd, this);
+      kkkk.onDown.add(id, this);
       pppp.onDown.add(iaNotIa, this);
       entere.onDown.add(indexPlus, this);
+      delet.onDown.add(indexMoins, this);
+      cursors.up.onDown.add(menuPlus, this);
+      cursors.down.onDown.add(menuMoins, this);
       verou10 = false;
     }
-
+    choixIndex = 1;
 
 }
+function choixMode() {
+  choixMax = 2;
+  text4.setText("                    aiming cursor's limit configuration")
+  switch (choixIndex) {
+    case 1:
+      text3.setText("      huge mess");
+      text3.stroke = '#980000';
+      mode = 1;
+      aimLengh = 0.035;
+      aimLengh2 = 0.035;
+      break;
+    case 2:
+      text3.setText("     empty shit");
+      text3.stroke = '#1a6f00';
+      mode = 2;
+      aimLengh = 0.045;
+      aimLengh2 = 0.045;
+      break;
+  }
+}
+function AIlevel() {
+  choixMax = 5;
+  text4.setText("AI's aimbot accuracy (press P to turn AI on/off ingame)")
+  switch (choixIndex) {
+    case 1:
+      text3.setText("     potato haxx");
+      text3.stroke = '#1a6f00';
+      maxAIrate = 3000;
+      minAIrate = 3000;
+      laserFast = 350;
+      minAcc = -2;
+      maxAcc = 2;
+      break;
+    case 2:
+      text3.setText("      cod's AI");
+      text3.stroke = '#6f8d00';
+      maxAIrate = 1500;
+      minAIrate = 1200;
+      laserFast = 350;
+      minAcc = -1;
+      maxAcc = 1;
+      break;
+    case 3:
+      text3.setText("     nice hacks");
+      text3.stroke = '#a58500';
+      maxAIrate = 1200;
+      minAIrate = 900;
+      laserFast = 480;
+      minAcc = -2;
+      maxAcc = -2;
+      break;
+    case 4:
+      text3.setText("   trickshot master");
+      text3.stroke = '#a73b01';
+      maxAIrate = 900;
+      minAIrate = 600;
+      laserFast = 670;
+      minAcc = -2;
+      maxAcc = -2;
+      break;
+    case 5:
+      text3.setText("   common cs haxx");
+      text3.stroke = '#980000';
+      maxAIrate = 600;
+      minAIrate = 450;
+      laserFast = 780;
+      minAcc = -2;
+      maxAcc = 2;
+      break;
+
+  }
+}
+function vieMaxRed() {
+  life2 = choixIndex;
+  text3.stroke = '#dd0000';
+  choixMax = 1000;
+  text4.setText("                                RED character lives");
+  text3.setText("              "+choixIndex);
+}
+function vieMaxBlue() {
+  life = choixIndex;
+  text3.stroke = '#00aa88';
+  choixMax = 1000;
+  text4.setText("                                BLUE character lives");
+  text3.setText("              "+choixIndex);
+}
+
+function menuPlus() {
+  if (choixIndex < choixMax) {
+    choixIndex++;
+    console.log(choixIndex);
+  }else if (choixIndex >= choixMax) {
+    choixIndex = 1;
+    console.log(choixIndex);
+  }
+}
+function menuMoins() {
+  if (choixIndex > 1) {
+    choixIndex = choixIndex-1;
+    console.log(choixIndex);
+  }else if (choixIndex <= 1) {
+    choixIndex = choixMax;
+    console.log(choixIndex);
+  }
+}
+
 
 function iaNotIa() {
   switch (isIa) {
@@ -322,7 +441,7 @@ function iaThink() {
           actionTimer = game.time.now + domInt(800, 3000);
           verou11 = false;
           runLeftNow = false;
-          jumpNow = false;
+          jumpNow = true;
         }else if (actionTimer > game.time.now && player2.x > 280) {
           verou11 = true;
           iaDoId = domInt(3,3);
@@ -341,7 +460,7 @@ function iaThink() {
           actionTimer = game.time.now + domInt(800, 3000);
           verou11 = false;
           runRightNow = false;
-          jumpNow = false;
+          jumpNow = true;
         }else if (actionTimer > game.time.now && player2.x < 30) {
           verou11 = true;
           iaDoId = domInt(2,2);
@@ -389,13 +508,26 @@ function iaThink() {
 
 
 function indexPlus() {
-  if (menuIndex == 4) {
+  if (menuIndex == 7) {
     sndFight.play();
   }
-  if (menuIndex < 5) {
+  if (menuIndex < 8) {
     menuIndex++;
     console.log("plus un");
-  }else if (menuIndex != 5) {
+  }else if (menuIndex != 8) {
+    menuIndex = 1;
+  }
+}
+function indexMoins() {
+  if (menuIndex == 7) {
+    sndFight.play();
+  }
+  if (menuIndex > 1 && menuIndex != 8) {
+    menuIndex = menuIndex -1;
+    text3.setText("");
+    text4.setText("");
+    console.log("moins un");
+  }else if (menuIndex == 1) {
     menuIndex = 1;
   }
 }
@@ -419,11 +551,11 @@ function heartForP2() {
 function hit () {
   if (laserSprite2.x <= player.x) {
       player.angle = angle2;
-      game.physics.arcade.velocityFromAngle(player.angle, 100, player.body.velocity);
+
       player.angle = 0;
     }else if (laserSprite2.x > player.x) {
       player.angle = angle2;
-      game.physics.arcade.velocityFromAngle(player.angle, -100, player.body.velocity);
+
       player.angle = 0;
     }
 
@@ -440,11 +572,11 @@ function hit () {
 function hit2 () {
   if (laserSprite.x <= player2.x) {
       player2.angle = angle;
-      game.physics.arcade.velocityFromAngle(player2.angle, 100, player2.body.velocity);
+
       player2.angle = 0;
     }else if (laserSprite.x > player2.x) {
       player2.angle = angle;
-      game.physics.arcade.velocityFromAngle(player2.angle, -100, player2.body.velocity);
+
       player2.angle = 0;
     }
 
@@ -548,7 +680,7 @@ function mooveOK() {
       player.body.velocity.x = 0;
   }
 
-  if ((zzzz.isDown || pad1.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER) || wwww.isDown) && game.time.now > jumpTimer - 800 && !player.body.onFloor() && (wwd == true || zzd == true) ) {
+  if ((ssss.isDown || pad1.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER) || ssss.isDown) && game.time.now > jumpTimer - 800 && !player.body.onFloor() && (wwd == true || zzd == true) ) {
     player.body.velocity.y = 20000/player.y;
     jumpTimer = game.time.now;
     zzd = false;
@@ -632,7 +764,7 @@ function mooveOK2 () {
       player2.body.velocity.x = 0;
   }
 
-  if ((iiii.isDown || pad2.justPressed(Phaser.Gamepad.XBOX360_RIGHT_TRIGGER)) && game.time.now > jumpTimer2 - 800 && !player2.body.onFloor() && iid == true ) {
+  if ((kkkk.isDown || pad2.justPressed(Phaser.Gamepad.XBOX360_A)) && game.time.now > jumpTimer2 - 800 && !player2.body.onFloor() && iid == true ) {
     player2.body.velocity.y = 20000/player2.y;
     jumpTimer2 = game.time.now;
     iid = false;
@@ -665,7 +797,7 @@ function shooting2 () {
    if (verou42 = true) {
     verou42 = false;
     if (shootPlayerNow == true) {
-      aimTimer2 = game.time.now + domInt(1200,1500);
+      aimTimer2 = game.time.now + domInt(minAIrate,maxAIrate);
     }else{
       aimTimer2 = game.time.now + 300;
     }
@@ -716,14 +848,14 @@ function shooting2 () {
     }
     if (shootPlayerNow == true) {
       if (player.x <= player2.x) {
-        laserSprite2.angle = anglePlayer;
-        game.physics.arcade.velocityFromAngle(laserSprite2.angle, -350, laserSprite2.body.velocity);
+        laserSprite2.angle = anglePlayer + domInt(minAcc,maxAcc);
+        game.physics.arcade.velocityFromAngle(laserSprite2.angle, -laserFast, laserSprite2.body.velocity);
         verou42 = true;
         aim2Y = aim2Y + domInt(7, 25);
         aim2X = aim2X - domInt(-5, 5);
       }else if (player.x > player2.x) {
         laserSprite2.angle = anglePlayer
-        game.physics.arcade.velocityFromAngle(laserSprite2.angle, 350, laserSprite2.body.velocity);
+        game.physics.arcade.velocityFromAngle(laserSprite2.angle, laserFast, laserSprite2.body.velocity);
         verou42 = true;
         aim2Y = aim2Y + domInt(7, 25);
         aim2X = aim2X - domInt(-5, 5);
@@ -878,9 +1010,27 @@ function update() {
         menuPrin.alpha = 0;
         menuInput.alpha = 0;
         menuInput2.alpha = 0;
+        choixMode();
+        return;
         break;
       case 5 :
+        menuS.alpha = 0;
+        AIlevel();
+        return;
+        break;
+      case 6 :
+        vieMaxBlue();
+        return;
+        break;
+      case 7 :
+        vieMaxRed();
+        return;
+        break;
+      case 8 :
+        text4.setText("");
+        text3.setText("");
         menuN.alpha = 0;
+        break;
     }
 
 
@@ -1015,24 +1165,24 @@ function update() {
     sight2.y = aim2Y;
 
     if (aimX < limite3.x) {
-      aimX = aimX + 6;
+      aimX = aimX + 2;
     }else if (aimX > limite4.x) {
-      aimX = aimX - 6;
+      aimX = aimX - 2;
     }
     if (aim2X < limite3.x) {
-      aim2X = aim2X + 6;
+      aim2X = aim2X + 2;
     }else if (aim2X > limite4.x) {
-      aim2X = aim2X - 6;
+      aim2X = aim2X - 2;
     }
     if (aimY < limite1.y) {
-      aimY = aimY + 6;
+      aimY = aimY + 2;
     }else if (aimY > limite2.y) {
-      aimY = aimY - 6;
+      aimY = aimY - 2;
     }
     if (aim2Y < limite1.y) {
-      aim2Y = aim2Y + 6;
+      aim2Y = aim2Y + 2;
     }else if (aim2Y > limite2.y) {
-      aim2Y = aim2Y - 6;
+      aim2Y = aim2Y - 2;
     }
     iaThink();
 
@@ -1062,6 +1212,11 @@ function update() {
       text2.x = player2.x - 7;
     }
 
+    if (mode == 2) {
+      stepId = 1;
+    }
+
+
     switch (stepId) {
       case 1:
         limite1.x = 0;
@@ -1081,11 +1236,11 @@ function update() {
         break;
       case 2:
         if (terminus < 23) {
-          limite1.y = limite1.y + alpha;
-          limite2.y = limite2.y - omega;
-          limite3.x = limite3.x + alpha2;
-          limite4.x = limite4.x - omega2;
-          terminus++;
+            limite1.y = limite1.y + alpha;
+            limite2.y = limite2.y - omega;
+            limite3.x = limite3.x + alpha2;
+            limite4.x = limite4.x - omega2;
+            terminus++;
         }else{
           terminus = 0;
           limiteCool = game.time.now + domInt(3000,4000);
