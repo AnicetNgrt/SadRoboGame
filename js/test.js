@@ -80,6 +80,21 @@ function domInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function heartIsActive() {
+  return cr && cr.x !== 1000 && cr.y !== 1000;
+}
+
+function aiShouldContestHeart() {
+  if (heartIsActive() == false) {
+    return false;
+  }
+
+  var cpuToHeart = Math.abs(cr.x - player2TrueX) + Math.abs(cr.y - player2TrueY);
+  var playerToHeart = Math.abs(cr.x - playerTrueX) + Math.abs(cr.y - playerTrueY);
+
+  return life2 <= 4 || cpuToHeart + 35 < playerToHeart;
+}
+
 function createPlayer2() {
   player2 = game.add.sprite(275, 25, 'dude2');
   game.physics.enable(player2, Phaser.Physics.ARCADE);
@@ -498,12 +513,14 @@ function iaThink() {
         iaDoId = domInt(2,7);
         break;
       case 5:
-        shootPlayerNow = true;
+        shootHeartNow = aiShouldContestHeart();
+        shootPlayerNow = shootHeartNow == false;
         jumpNow = false;
         iaDoId = domInt(2,7);
         break;
       case 6:
-        shootPlayerNow = true;
+        shootHeartNow = aiShouldContestHeart();
+        shootPlayerNow = shootHeartNow == false;
         jumpNow = false;
         iaDoId = domInt(2,7);
         break;
@@ -809,11 +826,11 @@ function mooveOK2 () {
 
 
 function shooting2 () {
-  if (jumpButton2.isDown || pad2.isDown(Phaser.Gamepad.XBOX360_LEFT_TRIGGER) || shootPlayerNow == true) {
+  if (jumpButton2.isDown || pad2.isDown(Phaser.Gamepad.XBOX360_LEFT_TRIGGER) || shootPlayerNow == true || (shootHeartNow == true && heartIsActive())) {
 
    if (verou42 = true) {
     verou42 = false;
-    if (shootPlayerNow == true) {
+    if (shootPlayerNow == true || (shootHeartNow == true && heartIsActive())) {
       aimTimer2 = game.time.now + domInt(minAIrate,maxAIrate);
     }else{
       aimTimer2 = game.time.now + 300;
@@ -843,11 +860,42 @@ function shooting2 () {
     droiteD = player.x - player2TrueX;
     angle2 = Math.atan(droiteA2/droiteB2)*180/Math.PI;
     anglePlayer = Math.atan(droiteC/droiteD)*180/Math.PI;
+    droiteE = cr.y - player2TrueY;
+    droiteG = cr.x - player2TrueX;
+    angleHeart = Math.atan(droiteE/droiteG)*180/Math.PI;
 
 
 
 
-    if (shootPlayerNow == false) {
+    if (shootHeartNow == true) {
+      if (cr.x <= player2.x) {
+        laserSprite2.angle = angleHeart + domInt(minAcc,maxAcc);
+        game.physics.arcade.velocityFromAngle(laserSprite2.angle, -laserFast, laserSprite2.body.velocity);
+        verou42 = true;
+        aim2Y = aim2Y + domInt(7, 25);
+        aim2X = aim2X - domInt(-5, 5);
+      }else if (cr.x > player2.x) {
+        laserSprite2.angle = angleHeart
+        game.physics.arcade.velocityFromAngle(laserSprite2.angle, laserFast, laserSprite2.body.velocity);
+        verou42 = true;
+        aim2Y = aim2Y + domInt(7, 25);
+        aim2X = aim2X - domInt(-5, 5);
+      }
+    }else if (shootPlayerNow == true) {
+      if (player.x <= player2.x) {
+        laserSprite2.angle = anglePlayer + domInt(minAcc,maxAcc);
+        game.physics.arcade.velocityFromAngle(laserSprite2.angle, -laserFast, laserSprite2.body.velocity);
+        verou42 = true;
+        aim2Y = aim2Y + domInt(7, 25);
+        aim2X = aim2X - domInt(-5, 5);
+      }else if (player.x > player2.x) {
+        laserSprite2.angle = anglePlayer
+        game.physics.arcade.velocityFromAngle(laserSprite2.angle, laserFast, laserSprite2.body.velocity);
+        verou42 = true;
+        aim2Y = aim2Y + domInt(7, 25);
+        aim2X = aim2X - domInt(-5, 5);
+      }
+    }else {
       if (sight2.x <= player2.x) {
         laserSprite2.angle = angle2;
         game.physics.arcade.velocityFromAngle(laserSprite2.angle, -1000, laserSprite2.body.velocity);
@@ -858,21 +906,6 @@ function shooting2 () {
         laserSprite2.angle = angle2
 
           game.physics.arcade.velocityFromAngle(laserSprite2.angle, 1000, laserSprite2.body.velocity);
-        verou42 = true;
-        aim2Y = aim2Y + domInt(7, 25);
-        aim2X = aim2X - domInt(-5, 5);
-      }
-    }
-    if (shootPlayerNow == true) {
-      if (player.x <= player2.x) {
-        laserSprite2.angle = anglePlayer + domInt(minAcc,maxAcc);
-        game.physics.arcade.velocityFromAngle(laserSprite2.angle, -laserFast, laserSprite2.body.velocity);
-        verou42 = true;
-        aim2Y = aim2Y + domInt(7, 25);
-        aim2X = aim2X - domInt(-5, 5);
-      }else if (player.x > player2.x) {
-        laserSprite2.angle = anglePlayer
-        game.physics.arcade.velocityFromAngle(laserSprite2.angle, laserFast, laserSprite2.body.velocity);
         verou42 = true;
         aim2Y = aim2Y + domInt(7, 25);
         aim2X = aim2X - domInt(-5, 5);
@@ -1216,6 +1249,10 @@ function update() {
       aim2Y = aim2Y - 2;
     }
     iaThink();
+    if (shootHeartNow == true && heartIsActive() == false) {
+      shootHeartNow = false;
+      shootPlayerNow = true;
+    }
 
     if (game.time.now > aimTimer2) {
 
